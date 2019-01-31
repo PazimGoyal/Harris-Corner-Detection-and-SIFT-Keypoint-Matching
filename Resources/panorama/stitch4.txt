@@ -1,0 +1,30 @@
+// Warp four of the half-resolution input images
+// usage: Panorama sphrWarp input.tga output.tga f [k1 k2]
+Panorama sphrWarp pano1_0008.tga warp08.tga 595 -0.15
+Panorama sphrWarp pano1_0009.tga warp09.tga 595 -0.15
+Panorama sphrWarp pano1_0010.tga warp10.tga 595 -0.15
+Panorama sphrWarp pano1_0011.tga warp11.tga 595 -0.15
+
+// Generate features
+Features computeFeatures warp08.tga warp08.f
+Features computeFeatures warp09.tga warp09.f
+Features computeFeatures warp10.tga warp10.f
+Features computeFeatures warp11.tga warp11.f
+
+// Compute matches
+Features matchFeatures warp08.f warp09.f 0.8 match-08-09.txt 2
+Features matchFeatures warp09.f warp10.f 0.8 match-09-10.txt 2
+Features matchFeatures warp10.f warp11.f 0.8 match-10-11.txt 2
+
+// Align the pairs using feature matching:
+// usage: Panorama alignPair input1.tga input2.tga nRANSAC RANSACthresh
+Panorama alignPair warp08.f warp09.f match-08-09.txt 200 1
+Panorama alignPair warp09.f warp10.f match-09-10.txt 200 1
+Panorama alignPair warp10.f warp11.f match-10-11.txt 200 1
+// ** NOTE: if using SIFT features and matches for debugging, use:
+// Panorama alignPair warp08.key warp09.key match-08-09.txt 200 1 sift
+
+// Finally, blend these four images together
+// usage: Panorama blendPairs pairlist.txt outfile.tga blendWidth
+// assume the output from previous command was saved in pairlist4.txt
+Panorama blendPairs pairlist4.txt stitch4.tga 200

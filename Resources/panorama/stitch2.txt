@@ -1,0 +1,22 @@
+// Warp two of the half-resolution input images
+// usage: project2 sphrWarp input.tga output.tga f [k1 k2]
+Panorama sphrWarp pano1_0008.tga warp08.tga 595 -0.15 0.0
+Panorama sphrWarp pano1_0009.tga warp09.tga 595 -0.15 0.0
+
+// Generate features for the two images
+Features computeFeatures warp08.tga warp08.f
+Features computeFeatures warp09.tga warp09.f
+
+// Match features (using ratio test)
+Features matchFeatures warp08.f warp09.f 0.8 match-08-09.txt 2
+
+// Align the pairs using feature matching:
+// usage: project2 alignPair input1.tga input2.tga nRANSAC RANSACthresh
+Panorama alignPair warp08.f warp09.f match-08-09.txt 200 1
+// ** NOTE: if using SIFT features and matches for debugging, use:
+// Panorama alignPair warp08.key warp09.key match-08-09.txt 200 1 sift
+
+// Finally, blend these two images together
+// usage: project2 blendPairs pairlist.txt outfile.tga blendWidth
+// assume the output from previous command was saved in pairlist2.txt
+Panorama blendPairs pairlist2.txt stitch2.tga 200
