@@ -4,7 +4,15 @@ import math
 
 def gradientCalculation(image,window_size,k,threshold):    
 ## Gradient
-    dx, dy = np.gradient(image)
+    sobelx=np.array([[0,0,0],[-1,0,1],[0,0,0]])
+    sobely=np.array([[0,-1,0],[0,0,0],[0,1,0]])
+
+
+    dx=cv2.filter2D(image,-1,sobelx)
+    dy=cv2.filter2D(image,-1,sobely)
+
+
+##    dx, dy = np.gradient(image)
     Ixx = dx*dx
     Ixy = dx*dy
     Iyy = dy*dy
